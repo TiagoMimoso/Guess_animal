@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 import requests
 import subprocess
 import platform
@@ -53,20 +54,57 @@ class AnimalGuessGUI:
         self.master = master
         self.secret_animal = None
         master.title("Guess the Animal")
+        master.geometry("700x500")
+        master.minsize(700, 500)
 
-        self.chat = tk.Text(master, height=20, width=50)
-        self.chat.pack()
+        # Title
+        self.title_label = ttk.Label(
+            master,
+            text="Guess the Animal",
+            font=("Segoe UI", 15, "bold"),
+            anchor="center"
+        )
+        self.title_label.pack(pady=10)
+        # Frames
 
-        self.entry = tk.Entry(master, width=40)
-        self.entry.pack(side=tk.LEFT, padx=5, pady=5)
+        self.top_frame = tk.Frame(master)
+        self.bottom_frame = tk.Frame(master)
+        self.bottom_frame.pack(side="bottom", fill="x")
+        self.top_frame.pack(side="top", fill="both", expand=True)
+
+        self.bottom_frame.pack_propagate(False)
+        self.bottom_frame.configure(height=50)
+
+        # Scrollbar + Chat
+        self.scrollbar = tk.Scrollbar(self.top_frame)
+        self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        self.chat = tk.Text(
+            self.top_frame,
+            wrap="word",
+            yscrollcommand=self.scrollbar.set,
+            font=("Segoe UI", 12),
+            bg="#f7f7f7",
+            fg="#333",
+            bd=2,
+            relief="groove"
+        )
+        self.chat.pack(fill="both", expand=True, padx=10, pady=10)
+
+        self.scrollbar.config(command=self.chat.yview)
+
+        # Entry + Buttons
+        self.entry = ttk.Entry(self.bottom_frame, width=50, font=("Segoe UI", 12))
+        self.entry.pack(side=tk.LEFT, padx=10, pady=10)
 
         self.entry.bind("<Return>", self.send_question_event)
 
-        self.send_button = tk.Button(master, text="Send", command=self.send_question)
-        self.send_button.pack(side=tk.LEFT)
+        self.send_button = ttk.Button(self.bottom_frame, text="Send", command=self.send_question)
+        self.send_button.pack(side=tk.LEFT, padx=5, pady=10)
 
-        self.new_game_button = tk.Button(master, text="New Game", command=self.start_new_game)
-        self.new_game_button.pack(side=tk.LEFT)
+        self.new_game_button = ttk.Button(self.bottom_frame, text="New Game", command=self.start_new_game)
+        self.new_game_button.pack(side=tk.LEFT, padx=5, pady=10)
+
 
     def send_question_event(self, event):
         self.send_question()
